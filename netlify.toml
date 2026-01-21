@@ -1,0 +1,310 @@
+# ============================================================================
+# FILE: netlify.toml
+# LOCATION: netlify.toml (project root directory)
+# PURPOSE: Configuration file for Netlify deployment of the Work Portfolio app
+# 
+# ============================================================================
+# WHAT THIS FILE DOES (FOR BEGINNERS)
+# ============================================================================
+# This file is like an instruction manual for Netlify (a hosting service).
+# When you deploy your app, Netlify reads this file to understand:
+#
+# 1. BUILD COMMAND: How to compile your Next.js app into production code
+# 2. PUBLISH DIRECTORY: Where the compiled app files are located
+# 3. ENVIRONMENT VARIABLES: Settings needed during the build process
+# 4. PLUGINS: Special Netlify tools that help with Next.js deployment
+#
+# Think of it like giving a recipe to a chef - this file tells Netlify
+# exactly how to "cook" and serve your website to the world.
+#
+# ============================================================================
+# WHY THIS FILE IS IMPORTANT
+# ============================================================================
+# WITHOUT this file:
+#   - Netlify might guess wrong about how to build your app
+#   - Build could fail or produce incorrect results
+#   - Your app might not work properly when deployed
+#
+# WITH this file:
+#   - Netlify knows exactly what to do
+#   - Build process is consistent and reliable
+#   - Your portfolio app deploys successfully every time
+#
+# ============================================================================
+# DEPENDENCIES (Files this config works with)
+# ============================================================================
+# Related Project Files:
+#   - package.json: Contains "npm run build" script and dependencies
+#   - next.config.ts: Next.js framework configuration
+#   - app/: Your Next.js app pages and components
+#   - public/: Static assets (images, files) served directly
+#
+# External Services:
+#   - Netlify: The hosting platform (https://netlify.com)
+#   - @netlify/plugin-nextjs: Official plugin that makes Next.js work on Netlify
+#
+# ============================================================================
+# HOW DEPLOYMENT WORKS (Step by Step)
+# ============================================================================
+# 1. You push your code to GitHub (or connect your repo to Netlify)
+# 2. Netlify detects the new code and starts a "build"
+# 3. Netlify reads THIS FILE (netlify.toml) for instructions
+# 4. Netlify runs: npm install (installs dependencies from package.json)
+# 5. Netlify runs: npm run build (compiles Next.js app)
+# 6. Netlify takes the ".next" folder and deploys it to their servers
+# 7. Your portfolio is live on the internet!
+#
+# Total time: Usually 2-5 minutes for a portfolio site
+#
+# ============================================================================
+
+
+# ============================================================================
+# SECTION 1: BUILD CONFIGURATION
+# ============================================================================
+# This section tells Netlify the essential build information.
+# These are the most important settings for deployment.
+
+[build]
+  # --------------------------------------------------------------------------
+  # BUILD COMMAND
+  # --------------------------------------------------------------------------
+  # What command Netlify should run to build your app.
+  # 
+  # "npm run build" runs the "build" script from package.json which executes:
+  #   "next build" - compiles your Next.js app for production
+  #
+  # What happens during build:
+  #   1. TypeScript files are compiled to JavaScript
+  #   2. React components are optimized
+  #   3. CSS (Tailwind) is processed and minified
+  #   4. Pages are pre-rendered where possible
+  #   5. Everything is bundled into the .next folder
+  # --------------------------------------------------------------------------
+  command = "npm run build"
+  
+  # --------------------------------------------------------------------------
+  # PUBLISH DIRECTORY
+  # --------------------------------------------------------------------------
+  # The folder containing the built/compiled app that Netlify should deploy.
+  #
+  # For Next.js apps, this is always ".next"
+  # This folder is created when "npm run build" completes successfully.
+  #
+  # What's inside .next folder:
+  #   - Compiled JavaScript bundles
+  #   - Optimized CSS files
+  #   - Pre-rendered HTML pages
+  #   - Server-side rendering code
+  # --------------------------------------------------------------------------
+  publish = ".next"
+
+
+# ============================================================================
+# SECTION 2: BUILD ENVIRONMENT VARIABLES
+# ============================================================================
+# These variables are set during the build process.
+# They affect how Node.js and the build tools behave.
+#
+# Note: These are BUILD-TIME variables, not runtime variables.
+# Runtime variables (like API keys) should be set in Netlify Dashboard:
+#   Site Settings → Environment Variables
+
+[build.environment]
+  # --------------------------------------------------------------------------
+  # NODE OPTIONS: DNS Resolution
+  # --------------------------------------------------------------------------
+  # Forces Node.js to prefer IPv4 addresses over IPv6.
+  #
+  # WHY: Some networks have IPv6 issues that can cause build failures
+  # WHAT: Tells Node.js to try IPv4 first when connecting to servers
+  # WHEN: During the build process
+  #
+  # This is a safety measure - even if your portfolio doesn't use external
+  # APIs during build, it helps avoid random network-related failures.
+  # --------------------------------------------------------------------------
+  NODE_OPTIONS = "--dns-result-order=ipv4first"
+  
+  # --------------------------------------------------------------------------
+  # NODE VERSION (Optional - Netlify auto-detects)
+  # --------------------------------------------------------------------------
+  # Specifies which version of Node.js to use for building.
+  #
+  # Your project uses Next.js 16 which requires Node.js 18.18+
+  # Netlify typically auto-detects this from package.json or .nvmrc
+  # but we specify it explicitly to ensure consistency.
+  #
+  # If you encounter errors about Node.js version, update this value.
+  # --------------------------------------------------------------------------
+  NODE_VERSION = "20"
+
+
+# ============================================================================
+# SECTION 3: PLUGINS
+# ============================================================================
+# Plugins are Netlify extensions that add special functionality.
+# They run automatically during the build/deploy process.
+#
+# The double brackets [[plugins]] means this is an array in TOML format.
+# Each [[plugins]] block adds one plugin.
+
+# --------------------------------------------------------------------------
+# PLUGIN: @netlify/plugin-nextjs (REQUIRED for Next.js apps)
+# --------------------------------------------------------------------------
+# This is the OFFICIAL Netlify plugin for Next.js applications.
+# 
+# WHY IT'S NEEDED:
+#   Next.js has special features that don't work on standard hosting:
+#   - Server-side rendering (SSR)
+#   - API routes
+#   - Image optimization
+#   - Incremental Static Regeneration (ISR)
+#
+# WHAT IT DOES:
+#   - Converts Next.js output into Netlify-compatible format
+#   - Sets up serverless functions for SSR and API routes
+#   - Configures image optimization
+#   - Handles routing correctly
+#
+# WITHOUT THIS PLUGIN:
+#   Your Next.js app would NOT work properly on Netlify.
+#   Links might break, pages might not render, etc.
+#
+# INSTALLATION:
+#   Netlify automatically installs this plugin when detected.
+#   You don't need to add it to package.json.
+# --------------------------------------------------------------------------
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+
+# ============================================================================
+# SECTION 4: HEADERS (Optional but Recommended)
+# ============================================================================
+# Headers are extra information sent with your web pages.
+# They can improve security and performance.
+
+# --------------------------------------------------------------------------
+# GLOBAL HEADERS: Applied to ALL pages
+# --------------------------------------------------------------------------
+# These headers improve security for your portfolio site.
+[[headers]]
+  # Apply to all routes
+  for = "/*"
+  
+  [headers.values]
+    # -----------------------------------------------------------------------
+    # X-Frame-Options
+    # -----------------------------------------------------------------------
+    # Prevents your site from being embedded in iframes on other sites.
+    # This protects against "clickjacking" attacks where malicious sites
+    # could overlay invisible buttons over your content.
+    # -----------------------------------------------------------------------
+    X-Frame-Options = "DENY"
+    
+    # -----------------------------------------------------------------------
+    # X-Content-Type-Options
+    # -----------------------------------------------------------------------
+    # Prevents browsers from trying to guess the content type.
+    # This protects against attacks where malicious files are disguised
+    # as harmless file types.
+    # -----------------------------------------------------------------------
+    X-Content-Type-Options = "nosniff"
+    
+    # -----------------------------------------------------------------------
+    # Referrer-Policy
+    # -----------------------------------------------------------------------
+    # Controls what information is sent when clicking links to other sites.
+    # "strict-origin-when-cross-origin" means:
+    #   - Same site links: Full URL is sent
+    #   - Other sites (HTTPS→HTTPS): Only your domain is sent
+    #   - Other sites (HTTPS→HTTP): Nothing is sent
+    # This protects visitor privacy.
+    # -----------------------------------------------------------------------
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+
+# --------------------------------------------------------------------------
+# STATIC ASSETS CACHING: Images, Fonts, etc.
+# --------------------------------------------------------------------------
+# These headers tell browsers to cache static files for better performance.
+# Cached files load instantly on repeat visits.
+[[headers]]
+  # Apply to files in _next/static (Next.js generated assets)
+  for = "/_next/static/*"
+  
+  [headers.values]
+    # -----------------------------------------------------------------------
+    # Cache-Control
+    # -----------------------------------------------------------------------
+    # Tells browsers to cache these files for 1 year (31536000 seconds).
+    # "immutable" means the file will never change (Next.js uses unique names).
+    # 
+    # WHY 1 YEAR: Next.js adds unique hashes to filenames, so if the file
+    # changes, it gets a new name. Old files are safe to cache forever.
+    # -----------------------------------------------------------------------
+    Cache-Control = "public, max-age=31536000, immutable"
+
+
+# ============================================================================
+# SECTION 5: REDIRECTS (Optional)
+# ============================================================================
+# Redirects send visitors from one URL to another.
+# Useful for:
+#   - Handling old URLs that no longer exist
+#   - Creating short URLs
+#   - Forcing HTTPS
+#
+# Uncomment and modify these examples if needed:
+
+# Example: Redirect old URL to new URL
+# [[redirects]]
+#   from = "/old-page"
+#   to = "/new-page"
+#   status = 301  # 301 = permanent redirect, 302 = temporary
+
+# Example: Redirect to external site
+# [[redirects]]
+#   from = "/github"
+#   to = "https://github.com/yourusername"
+#   status = 302
+
+
+# ============================================================================
+# TROUBLESHOOTING GUIDE
+# ============================================================================
+# 
+# PROBLEM: Build fails with "command not found: npm"
+# SOLUTION: Ensure package.json exists in your repository root
+#
+# PROBLEM: Build fails with "Cannot find module"
+# SOLUTION: Check that all dependencies are in package.json, then run:
+#           npm install locally and commit package-lock.json
+#
+# PROBLEM: Site shows 404 errors
+# SOLUTION: Check that the @netlify/plugin-nextjs plugin is working
+#           Try clearing cache: Netlify Dashboard → Deploys → Clear cache
+#
+# PROBLEM: Styles not loading (site looks broken)
+# SOLUTION: Check that Tailwind CSS is properly configured
+#           Verify postcss.config.mjs and tailwind imports in globals.css
+#
+# PROBLEM: Build is slow (takes > 10 minutes)
+# SOLUTION: 
+#   1. Check for unnecessary dependencies in package.json
+#   2. Consider adding caching plugin (see note below)
+#   3. Optimize images before committing
+#
+# TO ADD CACHING (speeds up repeat builds):
+# Uncomment this plugin section:
+# [[plugins]]
+#   package = "netlify-plugin-cache-nextjs"
+#
+# ============================================================================
+# HELPFUL LINKS
+# ============================================================================
+# Netlify Docs: https://docs.netlify.com
+# Next.js on Netlify: https://docs.netlify.com/frameworks/next-js/overview/
+# netlify.toml Reference: https://docs.netlify.com/configure-builds/file-based-configuration/
+#
+# ============================================================================
